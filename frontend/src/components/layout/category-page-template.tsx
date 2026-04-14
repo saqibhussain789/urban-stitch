@@ -23,7 +23,7 @@ export default function CategoryPageTemplate({
   const [filterOpen, setFilterOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pt-20">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <section className="border-b border-slate-200 bg-white py-12 md:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
