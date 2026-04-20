@@ -4,13 +4,13 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Grid3x3, LayoutGrid, SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "@/components/ui/product-card";
-import { Product } from "@/lib/data";
+import { ApiProduct } from "@/lib/api";
 
 interface CategoryPageTemplateProps {
   title: string;
   subtitle: string;
   description: string;
-  products: Product[];
+  products: ApiProduct[];
 }
 
 export default function CategoryPageTemplate({

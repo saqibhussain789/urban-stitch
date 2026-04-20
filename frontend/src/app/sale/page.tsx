@@ -1,8 +1,14 @@
-import { products } from "@/lib/data";
+import { fetchProducts, ApiProduct } from "@/lib/api";
 import CategoryPageTemplate from "@/components/layout/category-page-template";
 
-export default function SalePage() {
-  const categoryProducts = products.filter((p) => p.isSale);
+export default async function SalePage() {
+  let categoryProducts: ApiProduct[] = [];
+  try {
+    const all = await fetchProducts();
+    categoryProducts = all.filter((p) => p.isSale);
+  } catch {
+    categoryProducts = [];
+  }
 
   return (
     <CategoryPageTemplate

@@ -1,10 +1,16 @@
 import Link from "next/link";
-import { products } from "@/lib/data";
+import { fetchProducts } from "@/lib/api";
 import ProductCard from "@/components/ui/product-card";
 
-export default function FeaturedProducts() {
-  // Show first 4 products as featured
-  const featuredProducts = products.slice(0, 4);
+export default async function FeaturedProducts() {
+  let featuredProducts = [];
+
+  try {
+    const all = await fetchProducts();
+    featuredProducts = all.slice(0, 4);
+  } catch {
+    featuredProducts = [];
+  }
 
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -14,15 +20,21 @@ export default function FeaturedProducts() {
             Featured Products
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover our premium collection of clothing and accessories, crafted for style and comfort.
+            Discover our premium collection of Pakistani fabrics, crafted for style and elegance.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {featuredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 text-gray-500">
+            <p>No products available at the moment.</p>
+          </div>
+        )}
 
         <div className="text-center">
           <Link

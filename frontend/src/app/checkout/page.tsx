@@ -6,10 +6,11 @@ import { useCartStore } from "@/store/cartStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { CheckCircle2, ChevronRight, Lock } from "lucide-react";
+import { CheckCircle2, Lock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { placeOrder } from "@/lib/api";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -18,8 +19,9 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleOrder = () => {
+  const handleOrder = async () => {
     if (!fullName || !phone || !address || !city) {
       toast.error("Please fill in all delivery details.");
       return;
@@ -29,9 +31,28 @@ export default function CheckoutPage() {
       return;
     }
 
-    clearCart();
-    toast.success("Order placed successfully! We will contact you shortly.");
-    router.push("/");
+    setIsSubmitting(true);
+    try {
+      const response = await placeOrder({
+        fullName,
+        phone,
+        address,
+        city,
+        items: items.map((item) => ({
+          productVariantId: item.variantId,
+          quantity: item.quantity,
+        })),
+      });
+
+      clearCart();
+      toast.success("Order placed successfully! We will contact you shortly.");
+      router.push(`/checkout/success?trackingId=${response.trackingId}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to place order";
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (items.length === 0) {
@@ -182,8 +203,12 @@ export default function CheckoutPage() {
                </div>
             </div>
 
-            <Button onClick={handleOrder} className="w-full mt-8 py-6 text-base rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-medium tracking-wide">
-              Complete Order
+            <Button
+              onClick={handleOrder}
+              disabled={isSubmitting}
+              className="w-full mt-8 py-6 text-base rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-medium tracking-wide disabled:opacity-60"
+            >
+              {isSubmitting ? "Placing Order..." : "Complete Order"}
             </Button>
             
             <p className="mt-6 text-center text-xs text-gray-400">

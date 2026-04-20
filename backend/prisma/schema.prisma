@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -71,6 +71,7 @@ model ProductImage {
 
 model Order {
   id           String      @id @default(uuid())
+  trackingId   String      @unique @default(cuid()) // Fallback to cuid if not provided
   userId       String?
   user         User?       @relation(fields: [userId], references: [id])
   totalAmount  Float

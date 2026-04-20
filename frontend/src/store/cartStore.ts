@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 export interface CartItem {
   id: string;
   productId: string;
+  variantId: string;
   title: string;
   price: number;
   image: string;
@@ -29,7 +30,7 @@ export const useCartStore = create<CartStore>()(
       addItem: (item) => {
         const { items } = get();
         const existingItem = items.find(
-          (i) => i.productId === item.productId && i.size === item.size && i.color === item.color
+          (i) => i.variantId === item.variantId
         );
 
         if (existingItem) {

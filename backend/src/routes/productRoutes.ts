@@ -1,5 +1,5 @@
+import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from "../controllers/productController";
 import { Router } from "express";
-import { getProducts, getProductById, createProduct } from "../controllers/productController";
 
 const router = Router();
 
@@ -8,5 +8,8 @@ router.get("/:id", getProductById);
 
 // Admin Routes
 router.post("/", createProduct);
+router.put("/:id", updateProduct);
+router.delete("/:id", deleteProduct);
+
 
 export default router;

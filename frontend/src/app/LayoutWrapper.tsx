@@ -11,7 +11,16 @@ export default function LayoutWrapper({
 }) {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
-  const contentOffsetClass = !isHomePage ? "pt-[10rem] md:pt-[11rem]" : "";
+  const isAdmin = pathname.startsWith("/admin");
+  const contentOffsetClass = !isHomePage && !isAdmin ? "pt-[10rem] md:pt-[11rem]" : "";
+
+  if (isAdmin) {
+    return (
+      <main className="flex-1">
+        {children}
+      </main>
+    );
+  }
 
   return (
     <>

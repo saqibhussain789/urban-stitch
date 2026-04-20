@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProductById } from "@/lib/data";
+import { fetchProductById } from "@/lib/api";
 import ProductDetail from "@/components/products/product-detail";
 
 interface PageProps {
@@ -10,11 +10,11 @@ interface PageProps {
 
 export default async function ProductPage({ params }: PageProps) {
   const { id } = await params;
-  const product = getProductById(id);
 
-  if (!product) {
+  try {
+    const product = await fetchProductById(id);
+    return <ProductDetail product={product} />;
+  } catch {
     notFound();
   }
-
-  return <ProductDetail product={product} />;
 }

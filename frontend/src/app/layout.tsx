@@ -21,9 +21,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Baloch Threads - Premium Clothing | Official Online Store",
+  title: "Baloch Fabrics - Premium Clothing | Official Online Store",
   description:
-    "Discover premium quality clothing at Baloch Threads. Shop the latest collections with fast shipping.",
+    "Discover premium quality clothing at Baloch Fabrics. Shop the latest collections with fast shipping.",
 };
 
 export default function RootLayout({

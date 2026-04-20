@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Product } from "@/lib/data";
+import { ApiProduct } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
@@ -11,13 +11,14 @@ import { useUiStore } from "@/store/uiStore";
 import { toast } from "sonner";
 
 interface ProductCardProps {
-  product: Product;
+  product: ApiProduct;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCartStore();
   const { setCartOpen } = useUiStore();
   const firstVariant = product.variants[0];
+  const imageUrl = product.images[0]?.url ?? "";
 
   const handleQuickAdd = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -30,9 +31,10 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     addItem({
       productId: product.id,
+      variantId: firstVariant.id,
       title: product.title,
       price: product.price,
-      image: product.images[0],
+      image: imageUrl,
       size: firstVariant.size,
       color: firstVariant.color,
       quantity: 1,
@@ -47,12 +49,14 @@ export default function ProductCard({ product }: ProductCardProps) {
       <CardContent className="p-0">
         <Link href={`/products/${product.id}`}>
           <div className="relative aspect-square overflow-hidden bg-gray-100">
-            <Image
-              src={product.images[0]}
-              alt={product.title}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-            />
+            {imageUrl && (
+              <Image
+                src={imageUrl}
+                alt={product.title}
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+            )}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
             <div className="absolute left-3 top-3 flex flex-col gap-2">
               {product.isSale && (
@@ -86,6 +90,10 @@ export default function ProductCard({ product }: ProductCardProps) {
             </h3>
           </Link>
 
+          <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">
+            {product.category?.name}
+          </p>
+
           <p className="text-sm text-gray-600 mb-3 line-clamp-2">
             {product.description}
           </p>
@@ -96,9 +104,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </span>
 
             <Button asChild size="sm">
-              <Link href={`/products/${product.id}`}>
-                View
-              </Link>
+              <Link href={`/products/${product.id}`}>View</Link>
             </Button>
           </div>
         </div>

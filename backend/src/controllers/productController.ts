@@ -19,7 +19,8 @@ export const getProducts = async (req: Request, res: Response) => {
 
 export const getProductById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
+
     const product = await prisma.product.findUnique({
       where: { id },
       include: {
@@ -72,3 +73,59 @@ export const createProduct = async (req: Request, res: Response) => {
       res.status(500).json({ error: "Failed to create product" });
     }
   };
+
+export const updateProduct = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const { title, description, price, isSale, isNew, gender, variants, images } = req.body;
+
+    // We can do a complex update, or delete and recreate relations for simplicity
+    const product = await prisma.product.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        price,
+        isSale,
+        isNew,
+        gender,
+        images: {
+          deleteMany: {},
+          create: images,
+        },
+        variants: {
+          deleteMany: {},
+          create: variants,
+        },
+      },
+      include: {
+        images: true,
+        variants: true,
+      },
+    });
+
+    res.json(product);
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(500).json({ error: "Failed to update product" });
+  }
+};
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+
+    // Delete relations first or use cascade if enabled in schema
+    await prisma.$transaction([
+      prisma.productImage.deleteMany({ where: { productId: id } }),
+      prisma.productVariant.deleteMany({ where: { productId: id } }),
+      prisma.product.delete({ where: { id } }),
+    ]);
+
+    res.json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).json({ error: "Failed to delete product" });
+  }
+};
+

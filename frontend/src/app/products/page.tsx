@@ -1,32 +1,61 @@
 "use client";
 
-import { useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ProductCard from "@/components/ui/product-card";
-import { products, categories } from "@/lib/data";
+import { fetchProducts, ApiProduct } from "@/lib/api";
+
+const ALL_CATEGORIES = "All";
+
+function mapGenderLabel(gender: string) {
+  if (gender === "MEN") return "Men";
+  if (gender === "WOMEN") return "Women";
+  return "Unisex";
+}
 
 export default function ProductsPage() {
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [products, setProducts] = useState<ApiProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES);
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
 
+  useEffect(() => {
+    fetchProducts()
+      .then(setProducts)
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const categories = useMemo(() => {
+    const names = products
+      .map((p) => p.category?.name)
+      .filter(Boolean) as string[];
+    return [ALL_CATEGORIES, ...Array.from(new Set(names))];
+  }, [products]);
+
   const filteredProducts = useMemo(() => {
     const normalizedQuery = deferredQuery.trim().toLowerCase();
-
     return products.filter((product) => {
       const matchesCategory =
-        selectedCategory === "All" || product.category === selectedCategory;
+        selectedCategory === ALL_CATEGORIES ||
+        product.category?.name === selectedCategory;
       const matchesQuery =
         normalizedQuery.length === 0 ||
-        [product.title, product.description, product.category, product.gender]
+        [
+          product.title,
+          product.description,
+          product.category?.name ?? "",
+          mapGenderLabel(product.gender),
+        ]
           .join(" ")
           .toLowerCase()
           .includes(normalizedQuery);
 
       return matchesCategory && matchesQuery;
     });
-  }, [deferredQuery, selectedCategory]);
+  }, [deferredQuery, selectedCategory, products]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -68,7 +97,16 @@ export default function ProductsPage() {
           ))}
         </div>
 
-        {filteredProducts.length === 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-80 rounded-[1.75rem] bg-slate-100 animate-pulse"
+              />
+            ))}
+          </div>
+        ) : filteredProducts.length === 0 ? (
           <div className="rounded-[2rem] border border-dashed border-slate-300 bg-slate-50 p-12 text-center text-slate-600">
             No products matched your search.
           </div>

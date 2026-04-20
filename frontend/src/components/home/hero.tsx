@@ -136,7 +136,7 @@ export default function HeroSection() {
                     variants={textVariants}
                     className="text-xl sm:text-2xl md:text-3xl font-light text-gray-200 tracking-wide mb-4 sm:mb-6 text-center max-w-3xl"
                 >
-                    Modern Clothing for a Bold Identity
+                    Exquisite Fabrics for a Bold Identity
                 </motion.p>
 
                 {/* Supporting Text */}

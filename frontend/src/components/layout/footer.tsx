@@ -104,7 +104,7 @@ export default function Footer() {
               viewport={{ once: true }}
               className="text-xs md:text-sm text-gray-400 text-center"
             >
-              © 2025 Baloch Threads. Crafted for premium streetwear.
+              © 2025 Baloch Fabrics. Crafted for premium menswear.
             </motion.p>
           </motion.div>
 
